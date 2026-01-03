@@ -153,13 +153,12 @@ class DecisionTree():
                 ]
             
             # We create a "Normal Decision Node"
-            else:
-                # Remove the chosen feature
-                if features and best_col in features:
-                    to_remove = features.index(best_col)
-                    features.pop(to_remove)
-                # recursively call the algorithm to train it
-                child.next = self.entrenamiento(childs_indices, features, child.next)
+            # Remove the chosen feature
+            if features and best_col in features:
+                to_remove = features.index(best_col)
+                features.pop(to_remove)
+            # recursively call the algorithm to train it
+            child.next = self.entrenamiento(childs_indices, features, child.next)
         return node
     
     def run(self):
