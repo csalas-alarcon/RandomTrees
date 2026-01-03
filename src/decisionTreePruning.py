@@ -23,11 +23,12 @@ class Node():
 # Decision Tree
 class DecisionTree():
 
-    def __init__(self, database: pd.DataFrame):
+    def __init__(self, database: pd.DataFrame, min_samples: int= 50):
         # Information
         self.data= np.array(database.drop(FEATURE_COLS, axis=1).copy()) # Where the features are
         self.results= np.array(database[LABEL_COLS].copy()) # Where the labels are
         self.length= np.shape(self.results)[0] # Initial Length
+        self.min_samples= 50
 
         # Node Declaration
         self.node= None
@@ -98,13 +99,15 @@ class DecisionTree():
         newresults= self.results[indices]
 
         # If Pure Node -> return
-        if len(set(newresults)) == 1:
+        values, counts= np.unique(newresults, return_counts= True)
+        if len(values) == 1:
             node.value = newresults[0]
             return node
         
         # If not else to question -> return
-        if len(feature_ids) == 0:
-            node.value = max(set(newresults), key=newresults.count)  # compute mode
+        if len(features) == 0:
+            values, counts = np.unique(newresults, return_counts=True)
+            node.value = values[np.argmax(counts)]
             return node
 
         # We choose the best feature
@@ -118,6 +121,24 @@ class DecisionTree():
                  for i in indices
                  ]))
 
+
+        # PRE-PODA: mínimo número de ejemplos por hoja
+        feature_values = set(self.data[i][best_col] for i in indices)
+
+        for value in feature_values:
+            child_indices = [
+                i for i in indices
+                if self.data[i][best_col] == value
+            ]
+
+            if len(child_indices) < self.min_samples_leaf:
+                # No se permite la división
+                values, counts = np.unique(newresults, return_counts=True)
+                node.value = values[np.argmax(counts)]
+
+                return node
+
+
         # Create a Child per different value
         for value in feature_values:
             child = Node()
@@ -130,11 +151,6 @@ class DecisionTree():
                 for i in indices 
                 if self.data[i][best_col] == value
                 ]
-
-            # If no instances -> return most probable outcome
-            if not childs_indices:
-                child.next = max(set(newresults), key=newresults.count)
-                print('')
             
             # We create a "Normal Decision Node"
             else:
