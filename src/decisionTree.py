@@ -4,6 +4,8 @@ import typing
 
 import math
 
+from dataWork import node_to_dict
+
 
 # Information Gain Calculation ->
 
@@ -138,5 +140,16 @@ class DecisionTree():
         :return: None
         """
         self.node = self.entrenamiento(None, FEATURE_DICT.keys(), self.node)
-        print('')
+        
+        tree_dict= node_to_dict(self.node)
+
+        with open("decision_tree.json", w) as f:
+            json.dump(tree_dict, f, indent=2)
+
+'''
+        with open("decision_tree.json") as f:
+            tree_dict= json.load(f)
+
+        tree= dict_to_node(tree_dict)
+'''
                  
