@@ -86,6 +86,7 @@ class DecisionTree():
         return (FEATURE_DICT[max_feature], max_feature)
 
     def _entrenamiento(self, indices, features, node):
+        indices= [i for i in range(len(self.results))] if not indices else indices 
         node= Node() if node==None else ...
 
         newdata= self.data[indices]
@@ -128,6 +129,14 @@ class DecisionTree():
                     to_remove = features.index(best_col)
                     features.pop(to_remove)
                 # recursively call the algorithm
-                child.next = self._id3_recv(childs_indices, features, child.next)
+                child.next = self.entrenamiento(childs_indices, features, child.next)
         return node
+    
+    def run(self):
+        """Initializes ID3 algorithm to build a Decision Tree Classifier.
+
+        :return: None
+        """
+        self.node = self.entrenamiento(None, FEATURE_DICT.keys(), self.node)
+        print('')
                  
